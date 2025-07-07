@@ -1,0 +1,81 @@
+[
+{
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+        "name": "Рассылки",
+        "description": "Сервисы автоматических рассылок рекламы, писем и т.д."
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+        "name": "Телеграм боты",
+        "description": "Боты в Telegram, которые автоматически отвечают на стандартные запросы"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+        "name": "Полезные утилиты",
+        "description": "Различные утилиты"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 4,
+    "fields": {
+        "name": "Веб-приложения",
+        "description": "Разработка Веб-приложений"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 5,
+    "fields": {
+        "name": "Микросервисы",
+        "description": "разработка небольших сервисных приложений"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Удобный сервис рассылок",
+        "description": "Удобный сервис автоматических рассылок рекламных материалов",
+        "image": "catalog/photos/post_service.png",
+        "category": 1,
+        "price": "150.00",
+        "created_at": "2025-07-06T09:50:10.693Z",
+        "updated_at": "2025-07-06T09:50:10.693Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+        "name": "Почтовый спамер",
+        "description": "Спамит рекламу на почту пользователей",
+        "image": "catalog/photos/email_spammer.png",
+        "category": 1,
+        "price": "100.00",
+        "created_at": "2025-07-06T09:53:30.747Z",
+        "updated_at": "2025-07-06T09:53:30.747Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+        "name": "Телеграм бот",
+        "description": "Устал отвечать заказчикам на одни и те же вопросы? Создай телеграм бота. Он ответит за тебя",
+        "image": "catalog/photos/telegram_bot.png",
+        "category": 2,
+        "price": "120.00",
+        "created_at": "2025-07-06T09:55:48.813Z",
+        "updated_at": "2025-07-06T09:55:48.813Z"
+    }
+}
+]
