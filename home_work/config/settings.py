@@ -137,3 +137,6 @@ MEDIA_URL = "media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# print(BASE_DIR)
+# print(MEDIA_ROOT)
+# print(STATICFILES_DIRS)
