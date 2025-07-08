@@ -1,8 +1,7 @@
-
 from django.db import models
 import os
 
-from home_work.config.settings import BASE_DIR
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -35,7 +34,7 @@ class Product(models.Model):
         verbose_name="Описание продукта", help_text="Введите описание продукта"
     )
     image = models.ImageField(
-        upload_to= os.path.join(BASE_DIR, "catalog/photos"),
+        upload_to="catalog/photos",
         verbose_name="Изображение",
         blank=True,
         null=True,
