@@ -3,16 +3,21 @@ from django.http import HttpResponse
 from .models import Product, Contact
 
 
+def base(request):
+    return render(request, 'base.html')
+
+
 def home(request):
     # Получаем последние 5 созданных продуктов
     latest_products = Product.objects.order_by("-created_at")[:5]
 
+    context = {'latest_products': latest_products}
     # Выводим в консоль
     print("Последние 5 добавленных продуктов:")
     for product in latest_products:
         print(f"{product.name} - {product.created_at}")
 
-    return render(request, "home.html")
+    return render(request, "home.html", context)
 
 
 def contacts(request):
