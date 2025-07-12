@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from .models import Product, Contact
 
 
-def base(request):
-    return render(request, 'base.html')
+def greeting(request):
+    return render(request, 'greeting.html')
 
 
 def home(request):
@@ -34,3 +34,9 @@ def contacts(request):
     # Получаем контактные данные из базы
     contact_info = Contact.objects.first()
     return render(request, "contacts.html", {"contact_info": contact_info})
+
+def product_details(request, pk):
+    product = Product.objects.get(pk=pk)
+    context = {"product": product}
+    return render(request, "product_details.html", context)
+

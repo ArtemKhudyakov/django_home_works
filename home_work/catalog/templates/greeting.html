@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <h1 class="text-body-emphasis display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Добро пожаловать в SkyStore!</h1>
+        <p class="col-lg-8 mx-auto fs-5 text-muted animate__animated animate__fadeIn animate__delay-1s">
+            Лучший выбор цифровых товаров и услуг для вашего бизнеса
+        </p>
+        <div class="d-inline-flex gap-3 mb-5 animate__animated animate__fadeInUp animate__delay-1s">
+            <a href="{% url 'catalog:home' %}" class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill">
+                В каталог
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                </svg>
+            </a>
+            <a href="{% url 'catalog:contacts' %}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                Контакты
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+        <div class="col-md-4 animate__animated animate__fadeInLeft animate__delay-2s">
+            <div class="h-100 p-4 bg-primary bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-shield-check text-primary" viewBox="0 0 16 16">
+                        <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+                        <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                    </svg>
+                </div>
+                <h2>Надежность</h2>
+                <p>Гарантия качества всех цифровых товаров и полная поддержка</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="h-100 p-4 bg-success bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-lightning-charge text-success" viewBox="0 0 16 16">
+                        <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09zM4.157 8.5H7a.5.5 0 0 1 .478.647L6.11 13.59l5.732-6.09H9a.5.5 0 0 1-.478-.647L9.89 2.41z"/>
+                    </svg>
+                </div>
+                <h2>Мгновенная доставка</h2>
+                <p>Получите доступ к приобретенным товарам сразу после оплаты</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 animate__animated animate__fadeInRight animate__delay-2s">
+            <div class="h-100 p-4 bg-info bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-people text-info" viewBox="0 0 16 16">
+                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275z"/>
+                    </svg>
+                </div>
+                <h2>Поддержка</h2>
+                <p>Наша команда всегда готова помочь с любыми вопросами</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

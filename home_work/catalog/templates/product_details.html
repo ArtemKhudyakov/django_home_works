@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="mb-4">
+        <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Вернуться к каталогу
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-img-container text-center p-3" style="height: 400px; background-color: #f8f9fa;">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                         class="img-fluid h-100" style="object-fit: contain;">
+                    {% else %}
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title display-5 mb-3">{{ product.name }}</h1>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <span class="badge bg-primary me-2">{{ product.category.name }}</span>
+                        <h2 class="text-success mb-0">{{ product.price|floatformat:"0" }} $</h2>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="text-muted">Описание:</h5>
+                        <p class="lead">{{ product.description }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="text-muted">Категория:</h5>
+                        <p>{{ product.category.description }}</p>
+                    </div>
+
+                    <div class="d-grid gap-3 d-md-flex">
+                        <button class="btn btn-primary btn-lg px-4 me-md-2">
+                            <i class="bi bi-cart3 me-2"></i> Купить сейчас
+                        </button>
+                        <button class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-heart me-2"></i> В избранное
+                        </button>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between text-muted small">
+                        <div>Добавлен: {{ product.created_at|date:"d.m.Y" }}</div>
+                        <div>Обновлен: {{ product.updated_at|date:"d.m.Y" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
