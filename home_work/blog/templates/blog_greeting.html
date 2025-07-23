@@ -1,0 +1,93 @@
+{% extends 'blog_base.html' %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <h1 class="text-body-emphasis display-4 fw-bold mb-4 animate__animated animate__fadeInDown">Бессмысленный блог</h1>
+        <p class="col-lg-8 mx-auto fs-5 text-muted animate__animated animate__fadeIn animate__delay-1s">
+            Самые бесполезные статьи на свете
+        </p>
+    </div>
+
+    <!-- Последние статьи -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="mb-4">Последние статьи</h2>
+
+            {% for article in latest_articles %}
+            <div class="card mb-4 animate__animated animate__fadeInUp">
+                <div class="row g-0">
+                    {% if article.preview %}
+                    <div class="col-md-4">
+                        <img src="{{ article.preview.url }}" class="img-fluid rounded-start" alt="{{ article.title }}" style="max-height: 200px; object-fit: cover;">
+                    </div>
+                    {% endif %}
+                    <div class="col-md-{% if article.preview %}8{% else %}12{% endif %}">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ article.title }}</h3>
+                            <p class="text-muted">Автор: {{ article.author }} | {{ article.created_at|date:"d.m.Y" }}</p>
+                            <p class="card-text">{{ article.content|truncatewords:30 }}</p>
+                            <a href="#" class="btn btn-outline-primary">Читать далее</a>
+                            <span class="badge bg-secondary ms-2">
+                                Просмотров: {{ article.number_of_views }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                Пока нет ни одной статьи. Зайдите позже!
+            </div>
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-primary btn-lg">Все статьи</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Преимущества -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-4 animate__animated animate__fadeInLeft animate__delay-2s">
+            <div class="h-100 p-4 bg-primary bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-pen text-primary" viewBox="0 0 16 16">
+                        <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
+                    </svg>
+                </div>
+                <h2>Экспертные мнения</h2>
+                <p>Наши авторы - специалисты в любой области</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="h-100 p-4 bg-success bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-square-text text-success" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                        <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                    </svg>
+                </div>
+                <h2>Обсуждения</h2>
+                <p>Комментируйте и спорите о бессмысленных вещах</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 animate__animated animate__fadeInRight animate__delay-2s">
+            <div class="h-100 p-4 bg-info bg-opacity-10 border rounded-4 text-center">
+                <div class="feature-icon-small d-inline-flex align-items-center justify-content-center fs-4 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-emoji-sunglasses text-info" viewBox="0 0 16 16">
+                        <path d="M4.968 9.75a.5.5 0 1 0-.866.5A4.5 4.5 0 0 0 8 12.5a4.5 4.5 0 0 0 3.898-2.25.5.5 0 1 0-.866-.5A3.5 3.5 0 0 1 8 11.5a3.5 3.5 0 0 1-3.032-1.75M7 5.116V5a1 1 0 0 0-1-1H3.28a1 1 0 0 0-.97 1.243l.311 1.242A2 2 0 0 0 4.561 8H5a2 2 0 0 0 1.994-1.839A3 3 0 0 1 8 6c.393 0 .74.064 1.006.161A2 2 0 0 0 11 8h.438a2 2 0 0 0 1.94-1.515l.311-1.242A1 1 0 0 0 12.72 4H10a1 1 0 0 0-1 1v.116A4.2 4.2 0 0 0 8 5c-.35 0-.69.04-1 .116"/>
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-1 0A7 7 0 1 0 1 8a7 7 0 0 0 14 0"/>
+                    </svg>
+                </div>
+                <h2>Развлечение</h2>
+                <p>Читайте наши статьи для поднятия настроения</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
