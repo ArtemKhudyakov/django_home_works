@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView, DetailView, FormView
+from django.views.generic import ListView, TemplateView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Count
 
 from .models import Article
 
-# class GreetingView(TemplateView):
-#     template_name = 'blog_greeting.html'
 
 from django.views.generic import TemplateView
 from .models import Article
@@ -45,3 +43,34 @@ class ArticleListView(ListView):
             article_count=Count('id')
         ).order_by('-article_count')[:3]
         return context
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'article_detail.html'
+    context_object_name = 'article'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        obj.increment_views()
+        return obj
+
+class ArticleCreateView(CreateView):
+    model = Article
+    template_name = 'article_form.html'
+    fields = ['title', 'author', 'content', 'preview', 'publication_status']
+    success_url = reverse_lazy('blog:article_list')
+
+
+class ArticleUpdateView(UpdateView):
+    model = Article
+    template_name = 'article_form.html'
+    fields = ['title', 'author', 'content', 'preview', 'publication_status']
+    success_url = reverse_lazy('blog:article_list')
+
+    def get_success_url(self):
+        return reverse_lazy('blog:article_detail', kwargs={'pk': self.object.pk})
+
+class ArticleDeleteView(DeleteView):
+    model = Article
+    success_url = reverse_lazy('blog:article_list')
+    template_name = 'article_confirm_delete.html'

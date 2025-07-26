@@ -1,0 +1,25 @@
+{% extends 'blog_base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <article>
+        <h1>{{ article.title }}</h1>
+        <div class="text-muted mb-3">
+            Автор: {{ article.author }} |
+            Дата: {{ article.created_at|date:"d.m.Y" }} |
+            Просмотров: {{ article.number_of_views }}
+        </div>
+
+        {% if article.preview %}
+        <img src="{{ article.preview.url }}" class="img-fluid mb-4">
+        {% endif %}
+
+        <div class="article-content">
+            {{ article.content|linebreaks }}
+        </div>
+    </article>
+    <a href="{% url 'blog:article_update' article.pk %}" class="btn btn-primary">Редактировать статью</a>
+    <a href="{% url 'blog:article_delete' article.pk %}" class="btn btn-primary">Удалить статью</a>
+</div>
+{% endblock %}

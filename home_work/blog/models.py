@@ -29,7 +29,11 @@ class Article(models.Model):
 
     publication_status = models.BooleanField(default=False, )
 
-    number_of_views = models.IntegerField(default=0)
+    number_of_views = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
+
+    def increment_views(self):
+        self.number_of_views += 1
+        self.save(update_fields=['number_of_views'])
 
     class Meta:
         verbose_name = "Статья"
@@ -38,3 +42,5 @@ class Article(models.Model):
 
     def __str__(self):
         return f'Статья "{self.title}"'
+
+

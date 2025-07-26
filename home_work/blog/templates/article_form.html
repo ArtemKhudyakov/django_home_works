@@ -1,0 +1,44 @@
+{% extends 'blog_base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2 class="mb-4">Создать новую статью</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    <div class="text-danger">{{ form.title.errors }}</div>
+                </div>
+                <div class="mb-3">
+                    {{ form.author.label_tag }}
+                    {{ form.author }}
+                    <div class="text-danger">{{ form.author.errors }}</div>
+                </div>
+                <div class="mb-3">
+                    {{ form.content.label_tag }}
+                    {{ form.content }}
+                    <div class="text-danger">{{ form.content.errors }}</div>
+                </div>
+                <div class="mb-3">
+                    {{ form.preview.label_tag }}
+                    {{ form.preview }}
+                    <div class="text-danger">{{ form.preview.errors }}</div>
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.publication_status }}
+                    {{ form.publication_status.label_tag }}
+                </div>
+                {% if object %}
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                {% else %}
+                <button type="submit" class="btn btn-primary">Опубликовать</button>
+                {% endif %}
+                <a href="{% url 'blog:article_list' %}" class="btn btn-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

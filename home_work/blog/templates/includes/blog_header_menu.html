@@ -3,6 +3,9 @@
         <a href="{% url 'blog:greeting' %}" class="text-dark text-decoration-none">Бессмысленный блог</a>
     </h5>
     <nav class="ms-5">
+        <a class="btn btn-sm btn-success me-2" href="{% url 'blog:article_create' %}">
+            Новая статья
+        </a>
         <a class="btn btn-sm btn-outline-secondary me-2" href="{% url 'blog:greeting' %}">Главная</a>
         <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'catalog:home' %}">Вернуться в Каталог</a>
     </nav>
