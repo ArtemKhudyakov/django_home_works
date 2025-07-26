@@ -1,11 +1,6 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView, DetailView, FormView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Count
-
-from .models import Article
-
 
 from django.views.generic import TemplateView
 from .models import Article
