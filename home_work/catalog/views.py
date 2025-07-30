@@ -1,56 +1,49 @@
 from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView, DetailView, FormView
+from django.views.generic import ListView, TemplateView, DetailView, FormView, CreateView, UpdateView, DeleteView
+from django.views.generic.base import ContextMixin
+
 from django.urls import reverse_lazy
 
-from .models import Product, Contact
+from .forms import ProductForm
+from .models import Product, Contact, Category
 
 
-# def greeting(request):
-#     return render(request, 'greeting.html')
+class BaseView(ContextMixin):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all_categories'] = Category.objects.all()
+        return context
 
-class GreetingView(TemplateView):
+class GreetingView(BaseView, TemplateView):
     template_name = 'greeting.html'
 
 
-# def home(request):
-#     # Получаем последние 5 созданных продуктов
-#     latest_products = Product.objects.order_by("-created_at")[:5]
-#
-#     context = {'latest_products': latest_products}
-#     # Выводим в консоль
-#     print("Последние 5 добавленных продуктов:")
-#     for product in latest_products:
-#         print(f"{product.name} - {product.created_at}")
-#
-#     return render(request, "home.html", context)
-
-
-class HomeView(ListView):
+class HomeView(BaseView, ListView):
     model = Product
     template_name = 'home.html'
     context_object_name = 'latest_products'
 
+    # def get_queryset(self):
+    #     # Получаем последние 5 созданных продуктов
+    #     latest_products = super().get_queryset().order_by("-created_at")[:5]
+    #     return latest_products
+
+class CategoryProductsView(BaseView, ListView):
+    model = Product
+    template_name = 'category_products.html'
+    context_object_name = 'products'
+
     def get_queryset(self):
-        # Получаем последние 5 созданных продуктов
-        latest_products = super().get_queryset().order_by("-created_at")[:5]
-        return latest_products
+        category_id = self.kwargs['category_id']
+        return Product.objects.filter(category_id=category_id)
 
-# def contacts(request):
-#     if request.method == "POST":
-#         name = request.POST.get("name")
-#         phone = request.POST.get("phone")
-#         message = request.POST.get("message")
-#         return HttpResponse(
-#             f"""
-#             Спасибо, {name}. Ваше сообщение успешно отправлено!
-#     Мы свяжемся с Вами по номеру телефона {phone}"""
-#         )
-#
-#     # Получаем контактные данные из базы
-#     contact_info = Contact.objects.first()
-#     return render(request, "contacts.html", {"contact_info": contact_info})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_category'] = Category.objects.get(pk=self.kwargs['category_id'])
+        return context
 
-class ContactsView(TemplateView):
+
+class ContactsView(TemplateView, BaseView):
     template_name = "contacts.html"
 
     def get_context_data(self, **kwargs):
@@ -68,16 +61,29 @@ class ContactsView(TemplateView):
             Мы свяжемся с Вами по номеру телефона {phone}"""
         )
 
-# def product_details(request, pk):
-#     product = Product.objects.get(pk=pk)
-#     context = {"product": product}
-#     return render(request, "product_details.html", context)
 
-class ProductDetailView(DetailView):
+class ProductDetailView(BaseView, DetailView):
     model = Product
     template_name = 'product_details.html'
 
 
+class ProductCreateView(BaseView, CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('catalog:home')
 
+class ProductUpdateView(BaseView, UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_update.html'
+    success_url = reverse_lazy('catalog:home')
 
+    def get_success_url(self):
+        return reverse_lazy('catalog:product_details', kwargs={'pk': self.object.pk})
+
+class ProductDeleteView(BaseView, DeleteView):
+    model = Product
+    success_url = reverse_lazy('catalog:home')
+    template_name = 'product_delete.html'
 

@@ -36,6 +36,17 @@
                 <div class="mt-auto">
                     <div class="d-grid gap-2">
                         <a href="{% url 'catalog:product_details' product.id %}" class="btn btn-outline-primary">Подробнее</a>
+                        <div class="d-flex gap-2">  <!-- Горизонтальная группа кнопок -->
+                            <a href="{% url 'catalog:product_update' product.id %}"
+                               class="btn btn-outline-info flex-grow-1">  <!-- Голубая контурная кнопка -->
+                               <i class="bi bi-pencil"></i> Изменить
+                            </a>
+                            <a href="{% url 'catalog:product_delete' product.id %}"
+                               class="btn btn-outline-danger flex-grow-1">  <!-- Красная контурная кнопка -->
+                               <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        </div>
+
                         <a href="#" class="btn btn-success">Купить сейчас</a>
                     </div>
                 </div>
@@ -43,5 +54,11 @@
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'catalog:product_create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Добавить новый продукт
+    </a>
 </div>
 {% endblock %}
