@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-12 col-md text-center">
+        <h5>Личный кабинет</h5>
+        <small class="d-block mb-3 text-muted">&copy; {% now "Y" %}</small>
+    </div>
+    <div class="col-6 col-md">
+        <h5>Аккаунт</h5>
+        <ul class="list-unstyled text-small">
+            <li><a class="text-muted" href="{% url 'users:login' %}">Вход</a></li>
+            <li><a class="text-muted" href="{% url 'users:register' %}">Регистрация</a></li>
+            <li><a class="text-muted" href="#">Настройки</a></li>
+        </ul>
+    </div>
+    <div class="col-6 col-md">
+        <h5>Связь</h5>
+        <ul class="list-unstyled text-small">
+            <li><a class="text-muted" href="{% url 'catalog:contacts' %}">Контакты</a></li>
+            <li><a class="text-muted" href="#">Поддержка</a></li>
+        </ul>
+    </div>
+    <div class="col-6 col-md">
+        <h5>Переходы</h5>
+        <ul class="list-unstyled text-small">
+            <li><a class="text-muted" href="{% url 'blog:greeting' %}">Блог</a></li>
+            <li><a class="text-muted" href="{% url 'catalog:home' %}">Каталог</a></li>
+        </ul>
+    </div>
+</div>
