@@ -21,3 +21,14 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email','country', 'phone', 'avatar', 'password1', 'password2')
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'country', 'phone', 'avatar')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].disabled = True  # Имя пользователя нельзя менять
+        self.fields['email'].disabled = True  # Email тоже нельзя менять

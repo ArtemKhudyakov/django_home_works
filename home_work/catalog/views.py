@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.views.generic import ListView, TemplateView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.views.generic.base import ContextMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 
@@ -28,7 +29,7 @@ class HomeView(BaseView, ListView):
     #     latest_products = super().get_queryset().order_by("-created_at")[:5]
     #     return latest_products
 
-class CategoryProductsView(BaseView, ListView):
+class CategoryProductsView(LoginRequiredMixin, BaseView, ListView):
     model = Product
     template_name = 'category_products.html'
     context_object_name = 'products'
@@ -62,18 +63,18 @@ class ContactsView(TemplateView, BaseView):
         )
 
 
-class ProductDetailView(BaseView, DetailView):
+class ProductDetailView(LoginRequiredMixin, BaseView, DetailView):
     model = Product
     template_name = 'product_details.html'
 
 
-class ProductCreateView(BaseView, CreateView):
+class ProductCreateView(LoginRequiredMixin, BaseView, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'product_form.html'
     success_url = reverse_lazy('catalog:home')
 
-class ProductUpdateView(BaseView, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'product_update.html'
@@ -82,7 +83,7 @@ class ProductUpdateView(BaseView, UpdateView):
     def get_success_url(self):
         return reverse_lazy('catalog:product_details', kwargs={'pk': self.object.pk})
 
-class ProductDeleteView(BaseView, DeleteView):
+class ProductDeleteView(LoginRequiredMixin, BaseView, DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
     template_name = 'product_delete.html'

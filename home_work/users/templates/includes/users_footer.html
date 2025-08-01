@@ -6,23 +6,25 @@
     <div class="col-6 col-md">
         <h5>Аккаунт</h5>
         <ul class="list-unstyled text-small">
-            <li><a class="text-muted" href="{% url 'users:login' %}">Вход</a></li>
-            <li><a class="text-muted" href="#">Регистрация</a></li>
-            <li><a class="text-muted" href="#">Настройки</a></li>
+            <li><a class="text-muted" href="{% url 'users:login' %}"><i class="bi bi-box-arrow-in-right"></i> Вход</a></li>
+            <li><a class="text-muted" href="{% url 'users:register' %}"><i class="bi bi-person-plus"></i> Регистрация</a></li>
+            {% if user.is_authenticated %}
+                <li><a class="text-muted" href="{% url 'users:profile_edit' %}"><i class="bi bi-pencil-square"></i> Профиль</a></li>
+            {% endif %}
         </ul>
     </div>
     <div class="col-6 col-md">
         <h5>Связь</h5>
         <ul class="list-unstyled text-small">
-            <li><a class="text-muted" href="{% url 'catalog:contacts' %}">Контакты</a></li>
-            <li><a class="text-muted" href="#">Поддержка</a></li>
+            <li><a class="text-muted" href="{% url 'catalog:contacts' %}"><i class="bi bi-envelope"></i> Контакты</a></li>
+            <li><a class="text-muted" href="#"><i class="bi bi-question-circle"></i> Поддержка</a></li>
         </ul>
     </div>
     <div class="col-6 col-md">
         <h5>Переходы</h5>
         <ul class="list-unstyled text-small">
-            <li><a class="text-muted" href="{% url 'blog:greeting' %}">Блог</a></li>
-            <li><a class="text-muted" href="{% url 'catalog:home' %}">Каталог</a></li>
+            <li><a class="text-muted" href="{% url 'blog:greeting' %}"><i class="bi bi-journal-text"></i> Блог</a></li>
+            <li><a class="text-muted" href="{% url 'catalog:home' %}"><i class="bi bi-list-ul"></i> Каталог</a></li>
         </ul>
     </div>
 </div>

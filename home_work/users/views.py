@@ -1,10 +1,11 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
 
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from django.contrib.auth import login
 from django.contrib import messages
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm, UserProfileForm
 from .models import User
 
 class CustomLogoutView(LogoutView):
@@ -27,3 +28,13 @@ class UserRegisterView(CreateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме')
         return super().form_invalid(form)
+
+
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'profile_edit.html'
+    success_url = reverse_lazy('users:profile_edit')
+
+    def get_object(self, queryset=None):
+        return self.request.user  # Редактируем текущего пользователя

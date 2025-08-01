@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import TemplateView
 from .models import Article
@@ -17,7 +18,7 @@ class GreetingView(TemplateView):
         ).order_by('-created_at')[:5]
         return context
 
-class ArticleListView(ListView):
+class ArticleListView(LoginRequiredMixin, ListView):
     model = Article
     template_name = 'article_list.html'
     context_object_name = 'articles'
@@ -39,7 +40,7 @@ class ArticleListView(ListView):
         ).order_by('-article_count')[:3]
         return context
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(LoginRequiredMixin, DetailView):
     model = Article
     template_name = 'article_detail.html'
     context_object_name = 'article'
@@ -49,14 +50,14 @@ class ArticleDetailView(DetailView):
         obj.increment_views()
         return obj
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Article
     template_name = 'article_form.html'
     fields = ['title', 'author', 'content', 'preview', 'publication_status']
     success_url = reverse_lazy('blog:article_list')
 
 
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Article
     template_name = 'article_form.html'
     fields = ['title', 'author', 'content', 'preview', 'publication_status']
@@ -65,7 +66,7 @@ class ArticleUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('blog:article_detail', kwargs={'pk': self.object.pk})
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(LoginRequiredMixin, DeleteView):
     model = Article
     success_url = reverse_lazy('blog:article_list')
     template_name = 'article_confirm_delete.html'
