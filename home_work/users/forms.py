@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import forms
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 

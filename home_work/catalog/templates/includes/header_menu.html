@@ -1,8 +1,38 @@
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow position-relative">
     <h5 class="my-0 mr-md-auto font-weight-normal">Skystore</h5>
+
     <nav class="ms-5">
         <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:home' %}">Каталог</a>
         <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:contacts' %}">Контакты</a>
         <a class="p-2 btn btn-success" href="{% url 'catalog:product_create' %}">Создать продукт</a>
     </nav>
+
+    <div class="position-absolute top-0 end-0 mt-2 me-3">
+        {% if user.is_authenticated %}
+            <div class="d-flex align-items-center gap-2">  <!-- Добавил gap для отступов -->
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}"
+                         alt="Аватар"
+                         class="rounded-circle border"
+                         width="60"
+                         height="60"
+                         style="object-fit: cover;">  <!-- Увеличил до 40x40 для лучшей видимости -->
+                {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-person fs-5 text-muted"></i>  <!-- Иконка если нет аватара -->
+                    </div>
+                {% endif %}
+                <form action="{% url 'users:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Выйти</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="btn-group">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'users:login' %}">Войти</a>
+                <a class="btn btn-sm btn-primary" href="{% url 'users:register' %}">Регистрация</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
