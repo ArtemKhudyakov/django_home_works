@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.generic import (
     ListView,
@@ -14,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .forms import ProductForm
+                    # ProductModeratorForm
 from .models import Product, Contact, Category
 
 
@@ -86,6 +88,21 @@ class ProductCreateView(LoginRequiredMixin, BaseView, CreateView):
     template_name = "product_form.html"
     success_url = reverse_lazy("catalog:home")
 
+# class ProductCreateView(LoginRequiredMixin, CreateView):
+#     model = Product
+#     form_class = ProductForm
+#     template_name = "product_form.html"
+#     success_url = reverse_lazy("catalog:home")
+#
+#     def form_valid(self, form):
+#         print("Форма валидна! Данные:", form.cleaned_data)
+#         return super().form_valid(form)
+#
+#     def form_invalid(self, form):
+#         print("ОШИБКИ ВАЛИДАЦИИ:")
+#         for field, errors in form.errors.items():
+#             print(f"{field}: {errors}")
+#         return super().form_invalid(form)
 
 class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
     model = Product
@@ -95,6 +112,14 @@ class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy("catalog:product_details", kwargs={"pk": self.object.pk})
+
+    # def get_form_class(self):
+    #     user = self.request.user
+    #     # if user == self.object.owner:
+    #     #     return ProductForm
+    #     if user.has_perm('products.can_unpublish_product'):
+    #         return ProductModeratorForm
+    #     raise PermissionDenied
 
 
 class ProductDeleteView(LoginRequiredMixin, BaseView, DeleteView):

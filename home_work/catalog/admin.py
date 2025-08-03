@@ -18,12 +18,15 @@ class ProductAdmin(admin.ModelAdmin):
         "name",
         "category",
         "price",
+        "publication_status",
     )
-    list_filter = ("category",)
+    list_filter = ("category", "publication_status",)
     search_fields = (
         "name",
         "description",
+        "publication_status",
     )
+    list_editable = ("name", "price", "publication_status")
 
 
 @admin.register(Contact)
