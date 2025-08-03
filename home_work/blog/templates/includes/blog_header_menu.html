@@ -2,11 +2,39 @@
     <h5 class="my-0 mr-md-auto font-weight-normal">
         <a href="{% url 'blog:greeting' %}" class="text-dark text-decoration-none">Бессмысленный блог</a>
     </h5>
+
+    <!-- Основные кнопки навигации -->
     <nav class="ms-5">
-        <a class="btn btn-sm btn-success me-2" href="{% url 'blog:article_create' %}">
-            Новая статья
-        </a>
+        <a class="btn btn-sm btn-success me-2" href="{% url 'blog:article_create' %}">Новая статья</a>
         <a class="btn btn-sm btn-outline-secondary me-2" href="{% url 'blog:greeting' %}">Главная</a>
         <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'catalog:home' %}">Вернуться в Каталог</a>
     </nav>
+
+    <div class="ms-auto d-flex align-items-center">
+        {% if user.is_authenticated %}
+            <div class="d-flex align-items-center">
+                <span class="me-2 small d-none d-md-inline">Привет, {{ user.username }}!</span>
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Аватар" class="rounded-circle border me-2" width="50" height="50">
+                {% endif %}
+
+                <div class="d-flex flex-column">
+                    <!-- Кнопка профиля -->
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-sm btn-outline-primary mb-1">
+                        Профиль
+                    </a>
+                    <!-- Кнопка выхода -->
+                    <form action="{% url 'users:logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100">Выйти</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="btn-group">
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'users:login' %}">Войти</a>
+                <a class="btn btn-sm btn-primary" href="{% url 'users:register' %}">Регистрация</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
