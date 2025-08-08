@@ -19,9 +19,10 @@ class ProductForm(ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'category', 'price', 'description', 'image']
+        fields = ["name", "category", "price", "description", "image"]
         # fields = "__all__"
-#
+
+    #
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["price"].required = True
@@ -83,7 +84,14 @@ class ProductForm(ModelForm):
 class ProductModeratorForm(ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'category', 'publication_status']
+        fields = [
+            "name",
+            "description",
+            "price",
+            "image",
+            "category",
+            "publication_status",
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

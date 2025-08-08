@@ -4,7 +4,7 @@ from ...models import Product
 
 
 class Command(BaseCommand):
-    help = 'Создает группу модераторов с разрешениями для модератора'
+    help = "Создает группу модераторов с разрешениями для модератора"
 
     def handle(self, *args, **options):
         # Создаем группу
@@ -13,8 +13,8 @@ class Command(BaseCommand):
         # Получаем нужные разрешения
         permissions = Permission.objects.filter(
             codename__in=[
-                'can_unpublish_product',
-                'delete_product',
+                "can_unpublish_product",
+                "delete_product",
             ]
         )
 
@@ -22,6 +22,10 @@ class Command(BaseCommand):
         group.permissions.set(permissions)
 
         if created:
-            self.stdout.write(self.style.SUCCESS('Группа "Модератор продуктов" создана'))
+            self.stdout.write(
+                self.style.SUCCESS('Группа "Модератор продуктов" создана')
+            )
         else:
-            self.stdout.write(self.style.SUCCESS('Группа "Модератор продуктов" обновлена'))
+            self.stdout.write(
+                self.style.SUCCESS('Группа "Модератор продуктов" обновлена')
+            )

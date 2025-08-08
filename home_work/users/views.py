@@ -40,7 +40,7 @@ class UserRegisterView(CreateView):
 Пожалуйста, подтвердите Ваш адрес электронной почты для завершения регистрации.
 для этого перейдите по ссылке {url}""",
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[user.email]
+            recipient_list=[user.email],
         )
         response = super().form_valid(form)
         login(self.request, user)

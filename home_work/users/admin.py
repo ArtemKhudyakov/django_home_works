@@ -6,7 +6,16 @@ from .models import User
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
 
-    list_display = ("id", "username", "email", "country", "phone", "avatar", "is_staff", "is_superuser")
+    list_display = (
+        "id",
+        "username",
+        "email",
+        "country",
+        "phone",
+        "avatar",
+        "is_staff",
+        "is_superuser",
+    )
     search_fields = ("username", "email", "phone")
     list_filter = ("is_staff", "is_superuser", "is_active", "is_verified", "groups")
     ordering = ("username",)
@@ -14,8 +23,15 @@ class UserAdmin(admin.ModelAdmin):
         "groups",
         "user_permissions",
     )
-    list_editable = ("username", "email", "country", "phone", "avatar", "is_staff", "is_superuser",)
-    exclude = ('password',)
+    list_editable = (
+        "username",
+        "email",
+        "country",
+        "phone",
+        "avatar",
+        "is_staff",
+        "is_superuser",
+    )
 
 
 # from django.contrib import admin
