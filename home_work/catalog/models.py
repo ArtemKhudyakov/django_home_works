@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -77,12 +78,21 @@ class Product(models.Model):
         help_text="Выберите статус публикации продукта"
     )
 
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        related_name="products"
+    )
+
 
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["id"]
-        # permissions = [('can_unpublish_product', 'Can unpublish product')]
+        permissions = [('can_unpublish_product', 'Can unpublish product')]
 
     def __str__(self):
         return f'Продукт "{self.name}"'

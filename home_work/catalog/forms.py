@@ -79,8 +79,17 @@ class ProductForm(ModelForm):
                 raise ValidationError("Максимальный размер файла - 5MB!")
         return image
 
-# class ProductModeratorForm(ModelForm):
-#
-#     class Meta:
-#         model = Product
-#         fields = ['name', 'description', 'price', 'image', 'category', 'publication_status']
+
+class ProductModeratorForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'image', 'category', 'publication_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+        self.fields["image"].widget.attrs.update(
+            {"accept": "image/jpeg, image/png", "class": "form-control-file"}
+        )
+        self.fields["description"].widget.attrs.update({"rows": 4})

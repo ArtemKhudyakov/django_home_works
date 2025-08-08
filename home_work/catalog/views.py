@@ -14,8 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.urls import reverse_lazy
 
-from .forms import ProductForm
-                    # ProductModeratorForm
+from .forms import ProductForm, ProductModeratorForm
 from .models import Product, Contact, Category
 
 
@@ -82,27 +81,27 @@ class ProductDetailView(LoginRequiredMixin, BaseView, DetailView):
     template_name = "product_details.html"
 
 
-class ProductCreateView(LoginRequiredMixin, BaseView, CreateView):
+# class ProductCreateView(LoginRequiredMixin, BaseView, CreateView):
+#     model = Product
+#     form_class = ProductForm
+#     template_name = "product_form.html"
+#     success_url = reverse_lazy("catalog:home")
+
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = "product_form.html"
     success_url = reverse_lazy("catalog:home")
 
-# class ProductCreateView(LoginRequiredMixin, CreateView):
-#     model = Product
-#     form_class = ProductForm
-#     template_name = "product_form.html"
-#     success_url = reverse_lazy("catalog:home")
-#
-#     def form_valid(self, form):
-#         print("Форма валидна! Данные:", form.cleaned_data)
-#         return super().form_valid(form)
-#
-#     def form_invalid(self, form):
-#         print("ОШИБКИ ВАЛИДАЦИИ:")
-#         for field, errors in form.errors.items():
-#             print(f"{field}: {errors}")
-#         return super().form_invalid(form)
+    def form_valid(self, form):
+        print("Форма валидна! Данные:", form.cleaned_data)
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print("ОШИБКИ ВАЛИДАЦИИ:")
+        for field, errors in form.errors.items():
+            print(f"{field}: {errors}")
+        return super().form_invalid(form)
 
 class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
     model = Product
@@ -113,16 +112,28 @@ class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
     def get_success_url(self):
         return reverse_lazy("catalog:product_details", kwargs={"pk": self.object.pk})
 
-    # def get_form_class(self):
-    #     user = self.request.user
-    #     # if user == self.object.owner:
-    #     #     return ProductForm
-    #     if user.has_perm('products.can_unpublish_product'):
-    #         return ProductModeratorForm
-    #     raise PermissionDenied
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.owner or user.has_perm('catalog.can_unpublish_product'):
+            return ProductModeratorForm
+        return ProductForm
+
+    def form_valid(self, form):
+        # Проверяем, пытается ли пользователь изменить статус публикации
+        if 'publication_status' in form.changed_data:
+            if not self.request.user.has_perm('catalog.can_unpublish_product'):
+                form.add_error('publication_status', 'У вас нет прав на изменение статуса публикации')
+                return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class ProductDeleteView(LoginRequiredMixin, BaseView, DeleteView):
     model = Product
     success_url = reverse_lazy("catalog:home")
     template_name = "product_delete.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # Проверяем, имеет ли пользователь право удалять продукты
+        if not (request.user == self.get_object().owner or request.user.has_perm('catalog.delete_product')):
+            raise PermissionDenied("У вас нет прав на удаление этого продукта")
+        return super().dispatch(request, *args, **kwargs)
