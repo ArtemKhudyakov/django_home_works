@@ -6,7 +6,7 @@
     <article>
         <h1>{{ article.title }}</h1>
         <div class="text-muted mb-3">
-            Автор: {{ article.author }} |
+            Автор: {{ article.author.username }} |
             Дата: {{ article.created_at|date:"d.m.Y" }} |
             Просмотров: {{ article.number_of_views }}
         </div>
@@ -19,7 +19,12 @@
             {{ article.content|linebreaks }}
         </div>
     </article>
-    <a href="{% url 'blog:article_update' article.pk %}" class="btn btn-primary">Редактировать статью</a>
-    <a href="{% url 'blog:article_delete' article.pk %}" class="btn btn-primary">Удалить статью</a>
+    {% if user == article.owner or perms.blog.can_change_any_article %}
+    <a href="{% url 'blog:article_update' article.pk %}" class="btn btn-primary">Редактировать</a>
+    {% endif %}
+
+    {% if user == article.owner or perms.blog.can_delete_any_article %}
+    <a href="{% url 'blog:article_delete' article.pk %}" class="btn btn-danger">Удалить статью</a>
+    {% endif %}
 </div>
 {% endblock %}

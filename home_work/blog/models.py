@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 
 class Article(models.Model):
     title = models.CharField(
@@ -11,6 +11,15 @@ class Article(models.Model):
 
     author = models.CharField(
         max_length=100, verbose_name="Автор", help_text="Введите имя автора"
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name="Владелец",
+        related_name='articles'
     )
 
     content = models.TextField(
@@ -47,6 +56,11 @@ class Article(models.Model):
         verbose_name = "Статья"
         verbose_name_plural = "Статьи"
         ordering = ["title"]
+        permissions = [
+            ('can_publish_article', 'Может публиковать статьи'),
+            ('can_change_any_article', 'Может изменять любые статьи'),
+            ('can_delete_any_article', 'Может удалять любые статьи'),
+        ]
 
     def __str__(self):
         return f'Статья "{self.title}"'

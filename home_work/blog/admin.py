@@ -6,6 +6,7 @@ from .models import Article
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "owner",
         "title",
         "author",
         "content",
@@ -16,6 +17,6 @@ class ArticleAdmin(admin.ModelAdmin):
         "number_of_views",
     )
 
-    list_filter = ("publication_status", "number_of_views", "author")
+    list_filter = ("publication_status", "number_of_views", "author", "owner")
 
     search_fields = ("title", "content")

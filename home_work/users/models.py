@@ -42,7 +42,6 @@ class User(AbstractUser):
     )
     is_verified = models.BooleanField(default=False, verbose_name="Подтвержден")
 
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "username",

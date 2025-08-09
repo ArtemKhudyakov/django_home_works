@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="container my-5">
     <div class="mb-4">
         <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">
@@ -32,6 +42,13 @@
                         <span class="badge bg-primary me-2">{{ product.category.name }}</span>
                         <h2 class="text-success mb-0">{{ product.price|floatformat:"0" }} $</h2>
                     </div>
+                    {% if user.is_authenticated and user == product.owner or perms.catalog.can_unpublish_product %}
+                    <div class="mb-3">
+                        <span class="badge bg-{% if product.publication_status == 'published' %}success{% elif product.publication_status == 'draft' %}warning{% else %}secondary{% endif %}">
+                            {{ product.get_publication_status_display }}
+                        </span>
+                    </div>
+                    {% endif %}
 
                     <div class="mb-4">
                         <h5 class="text-muted">Описание:</h5>
@@ -56,15 +73,37 @@
 
                         <!-- Кнопки управления -->
                         <div class="d-flex gap-2 mt-2">
+                            {% if user.is_authenticated and user == product.owner or perms.catalog.change_product %}
                             <a href="{% url 'catalog:product_update' product.id %}"
                                class="btn btn-outline-info flex-grow-1 py-2">
-                               <i class="bi bi-pencil-square me-1"></i> Редактировать
+                                <i class="bi bi-pencil-square me-1"></i> Редактировать
                             </a>
+                            {% endif %}
+
+                            {% if user.is_authenticated and user == product.owner or perms.catalog.delete_product %}
                             <a href="{% url 'catalog:product_delete' product.id %}"
                                class="btn btn-outline-danger flex-grow-1 py-2">
-                               <i class="bi bi-trash3 me-1"></i> Удалить
+                                <i class="bi bi-trash3 me-1"></i> Удалить
                             </a>
+                            {% endif %}
                         </div>
+
+                        {% if user.is_authenticated and user == product.owner or perms.catalog.can_unpublish_product %}
+                        <div class="mt-3">
+                            <form method="post" action="{% url 'catalog:toggle_publish' product.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn btn-{% if product.publication_status == 'published' %}warning{% else %}success{% endif %} w-100 py-2">
+                                    <i class="bi bi-{% if product.publication_status == 'published' %}x-circle{% else %}check-circle{% endif %} me-1"></i>
+                                    {% if product.publication_status == 'published' %}
+                                    Снять с публикации
+                                    {% else %}
+                                    Опубликовать продукт
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
 
                     <hr class="my-4">

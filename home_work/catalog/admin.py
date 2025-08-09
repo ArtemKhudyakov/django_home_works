@@ -13,17 +13,17 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "name",
+    list_display = ("id", "name", "category", "price", "publication_status", "owner")
+    list_filter = (
         "category",
-        "price",
+        "publication_status",
     )
-    list_filter = ("category",)
     search_fields = (
         "name",
         "description",
+        "publication_status",
     )
+    list_editable = ("name", "price", "publication_status")
 
 
 @admin.register(Contact)

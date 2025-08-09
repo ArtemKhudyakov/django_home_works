@@ -5,14 +5,15 @@
     {% for product in latest_products %}
     <div class="col">
         <div class="card h-100">
-            <div class="card-header"
-                 style="height: 80px; display: flex; align-items: center; justify-content: center;">
-                <h4 class="my-0 font-weight-normal"
-                    style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+            <!-- Заголовок карточки -->
+            <div class="card-header" style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                <h4 class="my-0 font-weight-normal" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
                     {{ product.name }}
                 </h4>
             </div>
+
             <div class="card-body d-flex flex-column">
+                <!-- Цена и изображение -->
                 <h1 class="card-title pricing-card-title text-center">{{ product.price|floatformat:"0" }} $</h1>
                 <div class="d-flex align-items-center justify-content-center mb-3" style="min-height: 150px;">
                     {% if product.image %}
@@ -20,33 +21,59 @@
                          style="max-height: 130px; max-width: 100%; object-fit: contain;">
                     {% endif %}
                 </div>
+
+                <!-- Описание -->
                 <div class="mb-3">
-                    <p class="text-muted" style="
-                        display: -webkit-box;
-                        -webkit-line-clamp: 3;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        max-height: 4.5em;
-                        line-height: 1.5em;
-                    ">
+                    <p class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-height: 4.5em; line-height: 1.5em;">
                         {{ product.description|truncatechars:100 }}
                     </p>
                 </div>
+
+                <!-- Статус публикации (только для персонала и владельцев) -->
+                {% if user.is_staff or user == product.owner %}
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">Статус:
+                        <span class="badge bg-{% if product.publication_status == 'published' %}success{% elif product.publication_status == 'draft' %}warning{% else %}secondary{% endif %}">
+                            {{ product.get_publication_status_display }}
+                        </span>
+                    </small>
+                </div>
+                {% endif %}
+
+                <!-- Кнопки -->
                 <div class="mt-auto">
                     <div class="d-grid gap-2">
+                        <!-- Основная кнопка (видна всем) -->
                         <a href="{% url 'catalog:product_details' product.id %}" class="btn btn-outline-primary">Подробнее</a>
-                        <div class="d-flex gap-2">  <!-- Горизонтальная группа кнопок -->
-                            <a href="{% url 'catalog:product_update' product.id %}"
-                               class="btn btn-outline-info flex-grow-1">  <!-- Голубая контурная кнопка -->
-                               <i class="bi bi-pencil"></i> Изменить
+
+                        <!-- Кнопки управления (только для персонала и владельцев) -->
+                        {% if user.is_staff or user == product.owner %}
+                        <div class="d-flex gap-2">
+                            <!-- Кнопка Изменить -->
+                            <a href="{% if user == product.owner or perms.catalog.change_product %}{% url 'catalog:product_update' product.id %}{% else %}#{% endif %}"
+                               class="btn btn-outline-info flex-grow-1 {% if not user == product.owner and not perms.catalog.change_product %}disabled{% endif %}">
+                                <i class="bi bi-pencil"></i> Изменить
                             </a>
-                            <a href="{% url 'catalog:product_delete' product.id %}"
-                               class="btn btn-outline-danger flex-grow-1">  <!-- Красная контурная кнопка -->
-                               <i class="bi bi-trash"></i> Удалить
+
+                            <!-- Кнопка Удалить -->
+                            <a href="{% if user == product.owner or perms.catalog.delete_product %}{% url 'catalog:product_delete' product.id %}{% else %}#{% endif %}"
+                               class="btn btn-outline-danger flex-grow-1 {% if not user == product.owner and not perms.catalog.delete_product %}disabled{% endif %}">
+                                <i class="bi bi-trash"></i> Удалить
                             </a>
                         </div>
 
+                        <!-- Кнопка управления публикацией -->
+                        <form method="post" action="{% if user == product.owner or perms.catalog.can_unpublish_product %}{% url 'catalog:toggle_publish' product.id %}{% else %}#{% endif %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-{% if product.publication_status == 'published' %}warning{% else %}success{% endif %} w-100 {% if not user == product.owner and not perms.catalog.can_unpublish_product %}disabled{% endif %}">
+                                <i class="bi bi-{% if product.publication_status == 'published' %}x-circle{% else %}check-circle{% endif %} me-1"></i>
+                                {% if product.publication_status == 'published' %}Снять с публикации{% else %}Опубликовать{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <!-- Кнопка покупки (видна всем) -->
                         <a href="#" class="btn btn-success">Купить сейчас</a>
                     </div>
                 </div>
@@ -56,9 +83,12 @@
     {% endfor %}
 </div>
 
+<!-- Кнопка создания продукта (только для персонала с правами) -->
+{% if user.is_staff and perms.catalog.add_product %}
 <div class="text-center mt-4">
-    <a href="{% url 'catalog:product_create' %}" class="btn btn-primary btn-lg">
+    <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">
         <i class="bi bi-plus-circle"></i> Добавить новый продукт
     </a>
 </div>
+{% endif %}
 {% endblock %}

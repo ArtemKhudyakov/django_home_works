@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-from .models import Product
+from .models import Product, Category
 
 
 class ProductForm(ModelForm):
@@ -19,8 +19,10 @@ class ProductForm(ModelForm):
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ["name", "category", "price", "description", "image"]
+        # fields = "__all__"
 
+    #
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["price"].required = True
@@ -77,3 +79,25 @@ class ProductForm(ModelForm):
             if image.size > 5 * 1024 * 1024:
                 raise ValidationError("Максимальный размер файла - 5MB!")
         return image
+
+
+class ProductModeratorForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            "name",
+            "description",
+            "price",
+            "image",
+            "category",
+            "publication_status",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({"class": "form-control"})
+        self.fields["image"].widget.attrs.update(
+            {"accept": "image/jpeg, image/png", "class": "form-control-file"}
+        )
+        self.fields["description"].widget.attrs.update({"rows": 4})

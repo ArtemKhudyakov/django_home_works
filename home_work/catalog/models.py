@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -22,6 +23,16 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    # Варианты статусов для поля choices
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
+    STATUS_CHOICES = [
+        (DRAFT, "Черновик"),
+        (PUBLISHED, "Опубликовано"),
+        (ARCHIVED, "В архиве"),
+    ]
+
     name = models.CharField(
         max_length=200,
         verbose_name="Наименование",
@@ -49,10 +60,29 @@ class Product(models.Model):
         auto_now=True, verbose_name="Дата последнего изменения"
     )
 
+    # Новое поле для статуса публикации
+    publication_status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=DRAFT,
+        verbose_name="Статус публикации",
+        help_text="Выберите статус публикации продукта",
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+        related_name="products",
+    )
+
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
         ordering = ["id"]
+        permissions = [("can_unpublish_product", "Can unpublish product")]
 
     def __str__(self):
         return f'Продукт "{self.name}"'
