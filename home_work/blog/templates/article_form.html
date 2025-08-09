@@ -5,40 +5,64 @@
     <div class="row">
         <div class="col-md-8 mx-auto">
             <h2 class="mb-4">Создать новую статью</h2>
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 <div class="mb-3">
-                    {{ form.title.label_tag }}
+                    <label for="id_title" class="form-label">Название статьи</label>
                     {{ form.title }}
-                    <div class="text-danger">{{ form.title.errors }}</div>
                 </div>
+
                 <div class="mb-3">
-                    {{ form.author.label_tag }}
+                    <label for="id_author" class="form-label">Автор</label>
                     {{ form.author }}
-                    <div class="text-danger">{{ form.author.errors }}</div>
+                    <small class="text-muted">Или выберите из ваших данных:</small>
+                    {{ form.author_choice }}
                 </div>
+
                 <div class="mb-3">
-                    {{ form.content.label_tag }}
+                    <label for="id_content" class="form-label">Содержание</label>
                     {{ form.content }}
-                    <div class="text-danger">{{ form.content.errors }}</div>
                 </div>
+
                 <div class="mb-3">
-                    {{ form.preview.label_tag }}
+                    <label for="id_preview" class="form-label">Изображение</label>
                     {{ form.preview }}
-                    <div class="text-danger">{{ form.preview.errors }}</div>
                 </div>
+
+                {% if form.publication_status %}
                 <div class="mb-3 form-check">
                     {{ form.publication_status }}
-                    {{ form.publication_status.label_tag }}
+                    <label class="form-check-label" for="id_publication_status">
+                        {{ form.publication_status.label }}
+                    </label>
                 </div>
-                {% if object %}
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-                {% else %}
-                <button type="submit" class="btn btn-primary">Опубликовать</button>
                 {% endif %}
+
+                <button type="submit" class="btn btn-primary">Создать статью</button>
                 <a href="{% url 'blog:article_list' %}" class="btn btn-secondary">Отмена</a>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const authorInput = document.getElementById('id_author');
+    const authorChoice = document.getElementById('id_author_choice');
+
+    // При выборе из списка подставляем значение в поле ввода
+    authorChoice.addEventListener('change', function() {
+        if (this.value) {
+            authorInput.value = this.value;
+        }
+    });
+
+    // При ручном вводе сбрасываем выбор
+    authorInput.addEventListener('input', function() {
+        authorChoice.value = '';
+    });
+});
+</script>
 {% endblock %}
