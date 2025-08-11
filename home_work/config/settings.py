@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from email.policy import default
 from pathlib import Path
 
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL
@@ -155,9 +154,29 @@ EMAIL_VERIFICATION_URL = "email-confirm"
 
 from django.core.cache.backends.redis import RedisCache
 
-CASHES = {
+# CASHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "localhost:6379/1",
+#     }
+# }
+
+CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "localhost:6379/1",
+        "BACKEND": "django_redis.cache.RedisCache",  # Правильный бэкенд
+        "LOCATION": "redis://127.0.0.1:6379/1",  # Полный URL с схемой
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "skystore_",  # Добавьте префикс
+        "TIMEOUT": 60 * 15,  # 15 минут
     }
 }
+
+import django.core.cache
+cache = django.core.cache.caches['default']
+try:
+    cache.set('django_test_key', 'works', 10)
+    print("✅ Кеш работает! Значение:", cache.get('django_test_key'))
+except Exception as e:
+    print("❌ Ошибка кеша:", str(e))
