@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Article(models.Model):
     title = models.CharField(
         max_length=300,
@@ -19,7 +20,7 @@ class Article(models.Model):
         blank=True,
         null=True,
         verbose_name="Владелец",
-        related_name='articles'
+        related_name="articles",
     )
 
     content = models.TextField(
@@ -57,9 +58,9 @@ class Article(models.Model):
         verbose_name_plural = "Статьи"
         ordering = ["title"]
         permissions = [
-            ('can_publish_article', 'Может публиковать статьи'),
-            ('can_change_any_article', 'Может изменять любые статьи'),
-            ('can_delete_any_article', 'Может удалять любые статьи'),
+            ("can_publish_article", "Может публиковать статьи"),
+            ("can_change_any_article", "Может изменять любые статьи"),
+            ("can_delete_any_article", "Может удалять любые статьи"),
         ]
 
     def __str__(self):

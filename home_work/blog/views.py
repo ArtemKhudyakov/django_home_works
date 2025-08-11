@@ -17,6 +17,7 @@ from .forms import ArticleForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 
+
 class GreetingView(TemplateView):
     template_name = "blog_greeting.html"
 
@@ -40,10 +41,10 @@ class ArticleListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         # Для обычных пользователей показываем опубликованные + свои черновики
-        if not (user.is_superuser or user.has_perm('blog.can_change_any_article')):
+        if not (user.is_superuser or user.has_perm("blog.can_change_any_article")):
             queryset = queryset.filter(
-                models.Q(publication_status=True) |
-                models.Q(owner=user, publication_status=False)
+                models.Q(publication_status=True)
+                | models.Q(owner=user, publication_status=False)
             )
 
         return queryset.order_by("-created_at")
@@ -53,15 +54,13 @@ class ArticleListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         # Добавляем информацию о черновиках
-        for article in context['articles']:
+        for article in context["articles"]:
             article.is_draft = not article.publication_status
-            article.can_edit = (
-                    user == article.owner or
-                    user.has_perm('blog.can_change_any_article')
+            article.can_edit = user == article.owner or user.has_perm(
+                "blog.can_change_any_article"
             )
-            article.can_delete = (
-                    user == article.owner or
-                    user.has_perm('blog.can_delete_any_article')
+            article.can_delete = user == article.owner or user.has_perm(
+                "blog.can_delete_any_article"
             )
 
         return context
@@ -71,9 +70,11 @@ class ArticleListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         # Добавляем флаг is_draft для каждой статьи
-        for article in context['articles']:
+        for article in context["articles"]:
             article.is_draft = not article.publication_status
-            article.is_my_draft = (not article.publication_status) and (article.owner == user)
+            article.is_my_draft = (not article.publication_status) and (
+                article.owner == user
+            )
 
         # Топ авторов (только по опубликованным)
         context["top_authors"] = (
@@ -87,15 +88,20 @@ class ArticleListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        articles = context['articles']
+        articles = context["articles"]
 
         for article in articles:
             # Для суперпользователя и контент-менеджеров показываем статус всех статей
-            if self.request.user.is_superuser or self.request.user.has_perm('blog.can_change_any_article'):
+            if self.request.user.is_superuser or self.request.user.has_perm(
+                "blog.can_change_any_article"
+            ):
                 article.is_draft = not article.publication_status
             # Для обычных пользователей - только их черновики
             else:
-                article.is_draft = not article.publication_status and article.owner == self.request.user
+                article.is_draft = (
+                    not article.publication_status
+                    and article.owner == self.request.user
+                )
 
         # Топ авторов (только по опубликованным статьям)
         context["top_authors"] = (
@@ -126,7 +132,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
+        kwargs["request"] = self.request
         return kwargs
 
     def form_valid(self, form):
@@ -145,25 +151,33 @@ class ArticleUpdateView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         article = self.get_object()
-        if not (request.user == article.owner or request.user.has_perm('blog.can_change_any_article')):
+        if not (
+            request.user == article.owner
+            or request.user.has_perm("blog.can_change_any_article")
+        ):
             raise PermissionDenied("У вас нет прав на редактирование этой статьи")
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        if 'publication_status' in form.changed_data:
-            if not self.request.user.has_perm('blog.can_publish_article'):
-                form.add_error('publication_status', 'У вас нет прав на публикацию статей')
+        if "publication_status" in form.changed_data:
+            if not self.request.user.has_perm("blog.can_publish_article"):
+                form.add_error(
+                    "publication_status", "У вас нет прав на публикацию статей"
+                )
                 return self.form_invalid(form)
         return super().form_valid(form)
 
 
 class ArticleDeleteView(LoginRequiredMixin, DeleteView):
     model = Article
-    success_url = reverse_lazy('blog:article_list')
-    template_name = 'article_confirm_delete.html'
+    success_url = reverse_lazy("blog:article_list")
+    template_name = "article_confirm_delete.html"
 
     def dispatch(self, request, *args, **kwargs):
         article = self.get_object()
-        if not (request.user == article.owner or request.user.has_perm('blog.can_delete_any_article')):
+        if not (
+            request.user == article.owner
+            or request.user.has_perm("blog.can_delete_any_article")
+        ):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)

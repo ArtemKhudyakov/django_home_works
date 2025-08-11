@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from email.policy import default
 from pathlib import Path
 
 from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_REDIRECT_URL
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     "catalog",
     "blog",
     "users",
-    'django_select2',
+    "django_select2",
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,12 @@ EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_VERIFICATION_URL = "email-confirm"
+
+from django.core.cache.backends.redis import RedisCache
+
+CASHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "localhost:6379/1",
+    }
+}
