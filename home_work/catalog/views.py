@@ -1,10 +1,8 @@
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.generic import (
     ListView,
     TemplateView,
     DetailView,
-    FormView,
     CreateView,
     UpdateView,
     DeleteView,
@@ -24,6 +22,8 @@ from django.contrib import messages
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from django.core.cache import cache
+
+from .services.product_services import ProductServices
 
 
 class BaseView(ContextMixin):
@@ -79,43 +79,20 @@ class HomeView(BaseView, ListView):
 #     return latest_products
 
 class CategoryProductsView(LoginRequiredMixin, BaseView, ListView):
-    model = Product
     template_name = "category_products.html"
     context_object_name = "products"
 
     def get_queryset(self):
-        category_id = self.kwargs["category_id"]
-
-        # Формируем ключ кеша с учётом категории и прав пользователя
-        cache_key = f"category_{category_id}_products_for_user_{self.request.user.id}_staff_{self.request.user.is_staff}_perm_{self.request.user.has_perm('catalog.can_unpublish_product')}"
-
-        queryset = cache.get(cache_key)
-
-        if queryset is None:
-            # Если кеша нет, получаем данные из БД
-            queryset = Product.objects.filter(category_id=category_id)
-
-            # Применяем фильтрацию по статусу для обычных пользователей
-            if not (self.request.user.is_staff or self.request.user.has_perm('catalog.can_unpublish_product')):
-                queryset = queryset.filter(publication_status='published')
-
-            # Кешируем на 15 минут
-            cache.set(cache_key, queryset, 60 * 15)
-
-        return queryset
+        return ProductServices.filter_products_by_category(
+            category_id=self.kwargs["category_id"],
+            user=self.request.user
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Кешируем информацию о категории
-        category_cache_key = f"category_{self.kwargs['category_id']}_info"
-        current_category = cache.get(category_cache_key)
-
-        if current_category is None:
-            current_category = Category.objects.get(pk=self.kwargs["category_id"])
-            cache.set(category_cache_key, current_category, 60 * 60 * 24)  # Кеш на 1 день
-
-        context["current_category"] = current_category
+        context["current_category"] = ProductServices.get_category_with_cache(
+            self.kwargs["category_id"]
+        )
         return context
 
 # class CategoryProductsView(LoginRequiredMixin, BaseView, ListView):
