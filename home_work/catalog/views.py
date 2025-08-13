@@ -1,10 +1,8 @@
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.generic import (
     ListView,
     TemplateView,
     DetailView,
-    FormView,
     CreateView,
     UpdateView,
     DeleteView,
@@ -17,10 +15,16 @@ from django.urls import reverse_lazy
 from .forms import ProductForm, ProductModeratorForm
 from .models import Product, Contact, Category
 
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
+
+from .services.product_services import ProductServices
+
 
 class BaseView(ContextMixin):
     def get_context_data(self, **kwargs):
@@ -39,32 +43,73 @@ class HomeView(BaseView, ListView):
     context_object_name = "latest_products"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        if not (self.request.user.is_staff or self.request.user.has_perm('catalog.can_unpublish_product')):
-            queryset = queryset.filter(publication_status='published')
+        # Ключ кеша зависит от прав пользователя
+        cache_key = f"products_for_user_{self.request.user.id}_is_staff_{self.request.user.is_staff}_has_perm_{self.request.user.has_perm('catalog.can_unpublish_product')}"
+
+        queryset = cache.get(cache_key)
+
+        if queryset is None:
+            queryset = super().get_queryset()
+            if not (
+                self.request.user.is_staff
+                or self.request.user.has_perm("catalog.can_unpublish_product")
+            ):
+                queryset = queryset.filter(publication_status="published")
+
+            # Кешируем на 15 минут (60*15)
+            cache.set(cache_key, queryset, 60 * 15)
+
         return queryset
 
-    # def get_queryset(self):
-    #     # Получаем последние 5 созданных продуктов
-    #     latest_products = super().get_queryset().order_by("-created_at")[:5]
-    #     return latest_products
 
+# class HomeView(BaseView, ListView):
+#     model = Product
+#     template_name = "home.html"
+#     context_object_name = "latest_products"
+#
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         if not (self.request.user.is_staff or self.request.user.has_perm('catalog.can_unpublish_product')):
+#             queryset = queryset.filter(publication_status='published')
+#         return queryset
+
+# def get_queryset(self):
+#     # Получаем последние 5 созданных продуктов
+#     latest_products = super().get_queryset().order_by("-created_at")[:5]
+#     return latest_products
 
 class CategoryProductsView(LoginRequiredMixin, BaseView, ListView):
-    model = Product
     template_name = "category_products.html"
     context_object_name = "products"
 
     def get_queryset(self):
-        category_id = self.kwargs["category_id"]
-        return Product.objects.filter(category_id=category_id)
+        return ProductServices.filter_products_by_category(
+            category_id=self.kwargs["category_id"],
+            user=self.request.user
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["current_category"] = Category.objects.get(
-            pk=self.kwargs["category_id"]
+        context["current_category"] = ProductServices.get_category_with_cache(
+            self.kwargs["category_id"]
         )
         return context
+
+# class CategoryProductsView(LoginRequiredMixin, BaseView, ListView):
+#     model = Product
+#     template_name = "category_products.html"
+#     context_object_name = "products"
+#
+#     def get_queryset(self):
+#         category_id = self.kwargs["category_id"]
+#         return Product.objects.filter(category_id=category_id)
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["current_category"] = Category.objects.get(
+#             pk=self.kwargs["category_id"]
+#         )
+#         return context
 
 
 class ContactsView(TemplateView, BaseView):
@@ -86,6 +131,7 @@ class ContactsView(TemplateView, BaseView):
         )
 
 
+@method_decorator(cache_page(15 * 60), name="dispatch")
 class ProductDetailView(LoginRequiredMixin, BaseView, DetailView):
     model = Product
     template_name = "product_details.html"
@@ -144,10 +190,15 @@ class ProductUpdateView(LoginRequiredMixin, BaseView, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
-        if not (request.user.is_staff or request.user == product.owner or request.user.has_perm('catalog.change_product')):
+        if not (
+            request.user.is_staff
+            or request.user == product.owner
+            or request.user.has_perm("catalog.change_product")
+        ):
             messages.error(request, "У вас нет прав для редактирования этого продукта")
-            return redirect('catalog:home')
+            return redirect("catalog:home")
         return super().dispatch(request, *args, **kwargs)
+
 
 class ProductDeleteView(LoginRequiredMixin, BaseView, DeleteView):
     model = Product
@@ -156,9 +207,13 @@ class ProductDeleteView(LoginRequiredMixin, BaseView, DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
-        if not (request.user.is_staff or request.user == product.owner or request.user.has_perm('catalog.delete_product')):
+        if not (
+            request.user.is_staff
+            or request.user == product.owner
+            or request.user.has_perm("catalog.delete_product")
+        ):
             messages.error(request, "У вас нет прав для удаления этого продукта")
-            return redirect('catalog:home')
+            return redirect("catalog:home")
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -167,20 +222,23 @@ def toggle_publish_status(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
     if not request.user.is_authenticated:
-        messages.error(request, 'Требуется авторизация')
-        return redirect('users:login')
+        messages.error(request, "Требуется авторизация")
+        return redirect("users:login")
 
-    if not (request.user == product.owner or request.user.has_perm('catalog.can_unpublish_product')):
-        messages.error(request, 'Недостаточно прав')
-        return redirect('catalog:product_details', pk=product.pk)
+    if not (
+        request.user == product.owner
+        or request.user.has_perm("catalog.can_unpublish_product")
+    ):
+        messages.error(request, "Недостаточно прав")
+        return redirect("catalog:product_details", pk=product.pk)
 
     # Логика изменения статуса
-    if product.publication_status == 'published':
-        product.publication_status = 'draft'
-        messages.success(request, 'Продукт снят с публикации')
+    if product.publication_status == "published":
+        product.publication_status = "draft"
+        messages.success(request, "Продукт снят с публикации")
     else:
-        product.publication_status = 'published'
-        messages.success(request, 'Продукт опубликован')
+        product.publication_status = "published"
+        messages.success(request, "Продукт опубликован")
 
     product.save()
-    return redirect('catalog:product_details', pk=product.pk)
+    return redirect("catalog:product_details", pk=product.pk)

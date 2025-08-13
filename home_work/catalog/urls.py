@@ -32,5 +32,5 @@ urlpatterns = [
     path(
         "product_delete/<int:pk>/", ProductDeleteView.as_view(), name="product_delete"
     ),
-    path('toggle-publish/<int:pk>/', toggle_publish_status, name='toggle_publish'),
+    path("toggle-publish/<int:pk>/", toggle_publish_status, name="toggle_publish"),
 ]
